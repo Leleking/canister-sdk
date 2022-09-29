@@ -3,6 +3,8 @@ use std::io;
 
 use ic_exports::ic_cdk::api::stable::StableMemoryError;
 
+use crate::stable::MAX_PAGES_COUNT;
+
 thread_local! {
     static STORAGE: RefCell<Vec<u8>> = RefCell::new(vec![]);
 }
@@ -90,6 +92,11 @@ impl Default for StableWriter {
 impl StableWriter {
     /// Attempts to grow the memory by adding new pages.
     pub fn grow(&mut self, added_pages: u32) -> Result<(), StableMemoryError> {
+        dbg!(self.capacity + added_pages);
+        if self.capacity + added_pages >= MAX_PAGES_COUNT {
+            return Err(StableMemoryError::OutOfMemory);
+        }
+
         let old_page_count = stable_grow(added_pages)?;
         self.capacity = old_page_count + added_pages;
         Ok(())

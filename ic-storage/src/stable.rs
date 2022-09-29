@@ -133,6 +133,12 @@ use crate::{Error, Result};
 
 const VERSION_SIZE: usize = size_of::<u32>();
 
+/// Limit for stable memory pages.
+///
+/// Pages after that limit may be used by a client directly,
+/// and them will not be damaged by writes of that storage.
+pub const MAX_PAGES_COUNT: u32 = 16;
+
 /// Versioned data that can be written to, and read from stable storage.
 pub trait Versioned: for<'de> Deserialize<'de> + CandidType {
     /// The previous version of this data.
